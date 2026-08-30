@@ -1,0 +1,71 @@
+name: Montar Transcritor Windows V10 Auditoria
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  montar:
+    runs-on: windows-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Baixar projeto
+        uses: actions/checkout@v4
+
+      - name: Configurar Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          architecture: "x64"
+
+      - name: Instalar e testar dependencias
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          python -m py_compile app.py
+          python -c "import reportlab,imageio_ffmpeg,requests; print('PYTHON OK')"
+
+      - name: Baixar whisper.cpp oficial
+        shell: powershell
+        run: |
+          $url = "https://github.com/ggml-org/whisper.cpp/releases/download/v1.9.1/whisper-bin-x64.zip"
+          Invoke-WebRequest -Uri $url -OutFile whisper-bin-x64.zip
+          Expand-Archive whisper-bin-x64.zip -DestinationPath whisper -Force
+
+      - name: Testar whisper-cli
+        shell: powershell
+        run: |
+          $cli = Get-ChildItem -Path whisper -Recurse -Filter whisper-cli.exe | Select-Object -First 1
+          if (-not $cli) {
+            Write-Error "whisper-cli.exe não encontrado."
+            exit 1
+          }
+          & $cli.FullName --version
+          if ($LASTEXITCODE -ne 0) {
+            Write-Error "whisper-cli.exe falhou no teste."
+            exit 1
+          }
+
+      - name: Criar pacote V10
+        shell: powershell
+        run: |
+          New-Item -ItemType Directory -Force -Path pacote | Out-Null
+          Copy-Item app.py pacote\
+          Copy-Item requirements.txt pacote\
+          Copy-Item INICIAR_TRANSCRITOR_V10.bat pacote\
+          Copy-Item LEIA-ME.txt pacote\
+          Copy-Item whisper pacote\whisper -Recurse
+
+      - name: Compactar
+        shell: powershell
+        run: |
+          Compress-Archive -Path pacote\* -DestinationPath Transcritor-Windows-V10-AUDITORIA.zip -Force
+
+      - name: Publicar artefato
+        uses: actions/upload-artifact@v4
+        with:
+          name: Transcritor-Windows-V10-AUDITORIA
+          path: Transcritor-Windows-V10-AUDITORIA.zip
+          retention-days: 30
