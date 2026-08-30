@@ -1,0 +1,62 @@
+TRANSCRITOR WINDOWS V10 - AUDITORIA
+
+O QUE MUDOU
+===========
+
+1. Blocos de 1 minuto.
+   Para um áudio de 2h01, cerca de 121 blocos.
+   O progresso geral avança com frequência.
+
+2. Auditoria em tempo real:
+   - etapa;
+   - bloco;
+   - PID;
+   - tentativa;
+   - tempo total;
+   - tempo do bloco;
+   - processo vivo/parado;
+   - último evento.
+
+3. Heartbeat visual.
+   Mesmo quando o whisper não imprime texto, a tela mostra:
+   "Bloco X ativo — N segundos — PID ..."
+
+4. Watchdog.
+   Um bloco não pode ficar preso indefinidamente.
+   Se passar de 10 minutos, o processo é encerrado e tentado novamente.
+
+5. 3 tentativas por bloco.
+
+6. Download do modelo com retomada automática.
+
+7. Modelo salvo fora da pasta do aplicativo:
+   Downloads\TRANSCRITOR_MODELOS
+
+8. Estado de retomada:
+   *_V10_ESTADO.json
+
+9. Auditoria:
+   *_AUDITORIA_V10.log
+
+10. Log bruto whisper:
+   *_WHISPERCPP_V10.log
+
+11. Progresso:
+   *_PROGRESSO_TRANSCRICAO.txt
+
+12. Saídas:
+   *_AFIRMACOES_COMPLETAS.txt
+   *_AFIRMACOES_TRANSCRITAS.pdf
+
+INSTALAÇÃO
+==========
+
+Extraia em uma pasta NOVA:
+Área de Trabalho\TRANSCRITOR_V10
+
+Não extraia por cima da V7, V8 ou V9.
+
+Abra:
+INICIAR_TRANSCRITOR_V10.bat
+
+Use SMALL.
